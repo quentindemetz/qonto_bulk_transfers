@@ -50,7 +50,13 @@ RSpec.describe Transfers::BulkCreateMapper do
       let(:amount) { 12 }
 
       it 'multiplies the value by 100' do
-        expect(call.first).to have_attributes(amount_cents: 1200)
+        transfers = call
+
+        expect(transfers.first).to be_an_instance_of(Transfer)
+        expect(transfers.first).to have_attributes(
+          amount_cents: 1200,
+          bank_account:,
+        )
       end
     end
 
