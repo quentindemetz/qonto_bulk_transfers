@@ -20,8 +20,15 @@ module Transfers
           @credit_transfers,
         )
       end
-    rescue SQLite3::ConstraintException
-      raise InsufficientBalanceError
+    # rescue ActiveRecord::QueryCanceled
+    #   raise OperationInProgressError
+    rescue ActiveRecord::StatementInvalid => e
+      case e.cause
+      when SQLite3::ConstraintException
+        raise InsufficientBalanceError
+      else
+        raise e
+      end
     end
   end
 end

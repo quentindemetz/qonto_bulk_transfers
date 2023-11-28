@@ -11,14 +11,12 @@ class TransfersController < ApplicationController
       bank_account,
       credit_transfers_for(bank_account),
     )
-  rescue ActiveRecord::RecordInvalid
-    render head: :bad_request
   rescue Transfers::BulkCreateService::OperationInProgressError
-    render head: :conflict
+    render status: :conflict
   rescue Transfers::BulkCreateService::InsufficientBalanceError
-    render head: :unprocessable_entity
+    render status: :unprocessable_entity
   else
-    render head: :created
+    render status: :created
   end
 
   private
