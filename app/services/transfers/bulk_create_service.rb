@@ -7,11 +7,18 @@ module Transfers
 
     private
 
-    def initialize(bank_account, _credit_transfers)
+    def initialize(bank_account, credit_transfers)
       @bank_account = bank_account
-      @credit_transfers = bulk_transfers
+      @credit_transfers = credit_transfers
     end
 
-    def call; end
+    def call
+      @bank_account.update!(
+        balance_cents: @bank_account.balance_cents - @credit_transfers.sum(&:amount_cents),
+      )
+      ::Transfer.import!(
+        @credit_transfers,
+      )
+    end
   end
 end

@@ -1,4 +1,16 @@
-# README
+# Qonto - bulk transfer challenge
+
+The interesting part in this challenge is how to deal with several bulk transfer requests, which:
+- when taken in isolation, would not deplete the account balance
+- when taken sequentially, would bring the account balance below 0, which is forbidden
+
+The point of the implementation is to ensure that, even in the case of CONCURRENT bulk transfer requests, the account balance never reaches below 0.
+
+### Solutions
+
+1. lock the row in the database?
+2. use SQL check constraint and update with a SQL statement?
+
 
 To replicate the sample data into the database, use the following queries:
 ```SQL
