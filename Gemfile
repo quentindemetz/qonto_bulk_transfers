@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.2'
 
+gem 'activerecord-import'
 gem 'bootsnap', require: false
 gem 'puma', '>= 5.0'
 gem 'rails', '~> 7.1.2'
