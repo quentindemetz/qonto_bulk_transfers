@@ -3,8 +3,8 @@
 class TransfersController < ApplicationController
   def bulk_create
     bank_account = BankAccount.find_by!(
-      organization_bic: params[:organization_bic],
-      organization_iban: params[:organization_iban],
+      bic: params[:organization_bic],
+      iban: params[:organization_iban],
     )
 
     Transfers::BulkCreateService.call(

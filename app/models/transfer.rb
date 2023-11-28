@@ -2,4 +2,13 @@
 
 class Transfer < ApplicationRecord
   belongs_to :bank_account
+
+  validates(
+    :counterparty_name,
+    :counterparty_iban,
+    :counterparty_bic,
+    :amount_cents,
+    :description,
+    presence: true,
+  )
 end
