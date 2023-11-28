@@ -10,4 +10,6 @@ class BankAccount < ApplicationRecord
     :balance_cents,
     presence: true,
   )
+
+  validates :balance_cents, numericality: { greater_than: 0 }
 end
