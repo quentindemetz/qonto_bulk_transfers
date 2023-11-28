@@ -1,0 +1,19 @@
+repos:
+- repo: local
+  hooks:
+    - id: rubocop
+      name: RuboCop
+      language: system
+      entry: bash -c 'bundle exec rubocop ${RUBOCOP_OPTIONS:---autocorrect} "$@"' --
+      require_serial: true
+      files: (?x)(
+        \.(rb|rake)$|
+        Gemfile$|
+        Rakefile|
+        .irbrc$)
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
