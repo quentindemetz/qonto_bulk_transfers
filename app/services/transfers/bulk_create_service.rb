@@ -13,12 +13,15 @@ module Transfers
     end
 
     def call
-      @bank_account.update!(
-        balance_cents: @bank_account.balance_cents - @credit_transfers.sum(&:amount_cents),
-      )
-      ::Transfer.import!(
-        @credit_transfers,
-      )
+      BankAccount.transaction do
+        @bank_account.decrement!(:balance_cents, @credit_transfers.sum(&:amount_cents)) # rubocop:disable Rails/SkipsModelValidations
+
+        ::Transfer.import!(
+          @credit_transfers,
+        )
+      end
+    rescue SQLite3::ConstraintException
+      raise InsufficientBalanceError
     end
   end
 end

@@ -20,7 +20,7 @@ module Transfers
           amount_cents: convert_amount_into_cents(credit_transfer[:amount]),
           description: credit_transfer[:description],
           bank_account: @bank_account,
-        )
+        ).tap(&:validate!)
       end
     end
 
