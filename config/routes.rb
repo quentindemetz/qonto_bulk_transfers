@@ -9,4 +9,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  post '/transfers/bulk' => 'transfers#bulk_create', constraints: ->(req) { req.format == :json }
 end
