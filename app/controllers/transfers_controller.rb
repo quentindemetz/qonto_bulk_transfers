@@ -11,6 +11,8 @@ class TransfersController < ApplicationController
       bank_account,
       credit_transfers_for(bank_account),
     )
+  rescue ActiveRecord::RecordInvalid
+    render head: :bad_request
   rescue Transfers::BulkCreateService::OperationInProgressError
     render head: :conflict
   rescue Transfers::BulkCreateService::InsufficientBalanceError
@@ -22,15 +24,9 @@ class TransfersController < ApplicationController
   private
 
   def credit_transfers_for(bank_account)
-    params[:credit_transfer].map do |credit_transfer|
-      Transfer.new(
-        counterparty_name: credit_transfer[:counterparty_name],
-        counterparty_iban: credit_transfer[:counterparty_iban],
-        counterparty_bic: credit_transfer[:counterparty_bic],
-        amount_cents: credit_transfer[:amount],
-        description: credit_transfer[:description],
-        bank_account:,
-      )
-    end
+    Transfers::BulkCreateMapper.call(
+      bank_account,
+      params[:credit_transfers],
+    )
   end
 end

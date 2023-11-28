@@ -22,3 +22,8 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+
+- no authentication
+- not validations for request payload
+- using ArgumentError for validating parameters
