@@ -33,6 +33,7 @@ RSpec.describe Transfers::BulkCreateService do
       it 'updates the account balance and creates the transfers' do
         expect do
           described_class.call(bank_account, credit_transfers)
+          bank_account.reload
         end.to change(bank_account, :balance_cents).from(1500).to(0)
            .and change(Transfer, :count).by(2)
       end
@@ -47,6 +48,22 @@ RSpec.describe Transfers::BulkCreateService do
         expect do
           described_class.call(bank_account, credit_transfers)
         end.to raise_error(Transfers::BulkCreateService::InsufficientBalanceError)
+          .and not_change { bank_account.reload.balance_cents }
+          .and not_change(Transfer, :count)
+      end
+    end
+
+    context 'when the lock fails to be acquired' do
+      let(:balance_cents) { 1500 }
+      let(:first_transfer_amount_cents) { 1000 }
+      let(:second_transfer_amount_cents) { 600 }
+
+      it 'raises an OperationInProgressError, and does not change the data' do
+        expect(BankAccount).to receive(:lock).and_raise(ActiveRecord::LockWaitTimeout)
+
+        expect do
+          described_class.call(bank_account, credit_transfers)
+        end.to raise_error(Transfers::BulkCreateService::OperationInProgressError)
           .and not_change { bank_account.reload.balance_cents }
           .and not_change(Transfer, :count)
       end

@@ -83,6 +83,34 @@ RSpec.describe TransfersController do
       end
     end
 
+    context 'when the Transfers::BVulkCreateService raises an OperationInProgressError' do
+      let(:params) do
+        {
+          organization_bic: bank_account.bic,
+          organization_iban: bank_account.iban,
+          credit_transfers: [
+            {
+              counterparty_name: Faker::Name.name,
+              counterparty_iban: Faker::Bank.iban,
+              counterparty_bic: Faker::Bank.swift_bic,
+              amount: '2000.01',
+              description: Faker::Lorem.sentence
+            }
+          ]
+        }
+      end
+
+      it 'returns a 409 Conflict' do
+        expect(Transfers::BulkCreateService).to(
+          receive(:call).and_raise(Transfers::BulkCreateService::OperationInProgressError),
+        )
+
+        bulk_create
+
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
     context 'when the bank account balance is insufficient' do
       let(:params) do
         {
